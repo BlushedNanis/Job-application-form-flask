@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, flash
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 from os import getenv
@@ -37,6 +37,9 @@ def index():
         
         db.session.add(form)
         db.session.commit()
+        
+        flash(f"{request.form["first_name"]}, your form was submitted successfully!",
+              "success")
         
     return render_template("index.html")
 

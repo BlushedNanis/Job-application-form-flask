@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 from os import getenv
+from datetime import datetime
 
 
 load_dotenv()
@@ -26,11 +27,16 @@ class Form(db.Model):
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
-        first_name = request.form["first_name"]
-        last_name = request.form["last_name"]
-        email = request.form["email"]
-        date = request.form["date"]
-        occupation = request.form["occupation"]
+        form = Form(
+            first_name = request.form["first_name"],
+            last_name = request.form["last_name"],
+            email = request.form["email"],
+            date = datetime.strptime(request.form["date"], "%Y-%m-%d"),
+            occupation = request.form["occupation"]
+        )
+        
+        db.session.add(form)
+        db.session.commit()
         
     return render_template("index.html")
 

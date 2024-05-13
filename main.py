@@ -10,6 +10,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
+# Config flask instance
 app.config["SECRET_KEY"] = getenv("key")
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.db"
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
@@ -21,7 +22,7 @@ app.config["MAIL_PASSWORD"] = getenv("email_password")
 db = SQLAlchemy(app)
 mail = Mail(app)
 
-
+# Set db table
 class Form(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(80))
@@ -31,21 +32,26 @@ class Form(db.Model):
     occupation = db.Column(db.String(80))
     
 
+# Main page (form)
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
+        # Save user data in db when get POST request (by pressing submit button)
+        
         first_name = request.form["first_name"]
         last_name = request.form["last_name"]
         email = request.form["email"]
         date = request.form["date"]
         occupation = request.form["occupation"]
         
+        # Send user data to the db table
         form = Form(first_name=first_name, last_name=last_name,email=email,
             date=datetime.strptime(date, "%Y-%m-%d"), occupation=occupation)
         
         db.session.add(form)
         db.session.commit()
         
+        # Send confirmation e-mail to the user
         email_body = f"""Thank you for your submission, {first_name}
         
         Here is your information:
